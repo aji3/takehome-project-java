@@ -2,9 +2,6 @@ package com.kazuya.payment.service;
 
 import com.kazuya.payment.adapter.StripePaymentAdapter;
 import com.kazuya.payment.dto.CreatePaymentIntentRequest;
-import com.kazuya.payment.dto.PaymentStatus;
-import com.kazuya.payment.dto.PaymentTransaction;
-import com.kazuya.payment.repository.PaymentRepository;
 import com.kazuya.product.service.ProductService;
 import com.kazuya.product.service.dto.ProductDto;
 import com.stripe.model.PaymentIntent;
@@ -19,40 +16,19 @@ public class PaymentService {
 
   private StripePaymentAdapter paymentAdapter;
   private ProductService productService;
-  private PaymentRepository paymentRepository;
 
-  public PaymentService(
-      StripePaymentAdapter paymentAdapter,
-      ProductService productService,
-      PaymentRepository paymentRepository) {
+  public PaymentService(StripePaymentAdapter paymentAdapter, ProductService productService) {
     this.paymentAdapter = paymentAdapter;
     this.productService = productService;
-    this.paymentRepository = paymentRepository;
   }
 
   public PaymentIntent startPayment(CreatePaymentIntentRequest request) {
     PaymentIntent paymentIntent = createPaymentIntent(request);
-//    PaymentTransaction paymentTransaction =
-//        new PaymentTransaction(
-//            paymentIntent.getClientSecret(), paymentIntent.getId(), paymentIntent.getAmount());
-//    registerTransaction(paymentTransaction);
     return paymentIntent;
   }
 
-  public PaymentIntent updatePaymentTransactionAfterConfirm(String paymentIntentId) {
+  public PaymentIntent getPaymentIntent(String paymentIntentId) {
     PaymentIntent paymentIntent = paymentAdapter.fetchPaymentIntent(paymentIntentId);
-    Optional<PaymentTransaction> transaction =
-            paymentRepository.getPaymentTransaction(paymentIntentId);
-    if (transaction.isPresent()) {
-      if ("succeeded".equals(paymentIntent.getStatus())) {
-        transaction.get().setStatus(PaymentStatus.COMPLETED);
-      } else {
-        // need to know how redirect status is returned for error case
-      }
-    } else {
-      throw new IllegalArgumentException("Illegal payment intent id specified.");
-    }
-    paymentRepository.updatePaymentTransaction(transaction.get());
     return paymentIntent;
   }
 
@@ -68,10 +44,6 @@ public class PaymentService {
             .build();
 
     return this.paymentAdapter.createPaymentIntent(params);
-  }
-
-  private void registerTransaction(PaymentTransaction transaction) {
-    paymentRepository.registerPaymentTransaction(transaction);
   }
 
   private long calculateTotalAmount(CreatePaymentIntentRequest request) {

@@ -1,6 +1,5 @@
 package com.kazuya.payment.controller;
 
-import com.kazuya.payment.dto.PaymentTransaction;
 import com.kazuya.payment.service.PaymentService;
 import com.kazuya.product.service.ProductService;
 import com.kazuya.product.service.dto.ProductDto;
@@ -40,7 +39,7 @@ public class PaymentUiController {
 
   @GetMapping("/success.html")
   public String success(@RequestParam("payment_intent") String paymentIntent, Model model) {
-    PaymentIntent transaction = paymentService.updatePaymentTransactionAfterConfirm(paymentIntent);
+    PaymentIntent transaction = paymentService.getPaymentIntent(paymentIntent);
     model.addAttribute("paymentIntentId", paymentIntent);
     model.addAttribute("totalAmount", transaction.getAmount());
     return "success.html";
