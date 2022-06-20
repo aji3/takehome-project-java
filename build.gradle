@@ -24,7 +24,3 @@ dependencies {
 //    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 //    compile 'junit:junit:4.12'
 }
-
-test {
-    useJUnitPlatform()
-}

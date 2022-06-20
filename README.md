@@ -4,10 +4,12 @@
 
 Requires JDK11 or above.
 
-Run this command to run the application.
+1. Configure secrets.properties with your API key.
+2. Execute this command to run the application.
 ```
 gradlew bootRun
 ```
+Application will start up on 8080.
 
 ## A paragraph or two about your solution: how does it work? Which Stripe APIs does it use?
 
