@@ -1,11 +1,7 @@
 // This is your test publishable API key.
 const stripe = Stripe("pk_test_51LBZvPKiHLd6HGW3HqRFErBeIcWNbLiVlPRxtKD9MM03WsCNtK3jOuD5s1O0CDQPjVSPCemqHmYTMtP3kO66ZphU00PYq8jzBg");
 
-// The items the customer wants to buy -> items to be defined in caller html
-//const items = [{ id: "xl-tshirt", count: 1 }];
-
 let elements;
-
 initialize();
 checkStatus();
 

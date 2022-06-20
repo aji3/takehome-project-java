@@ -2,8 +2,9 @@
 
 ## Getting started
 
-It requires JDK11 or above.
-Run following command to run the application.
+Requires JDK11 or above.
+
+Run this command to run the application.
 ```
 gradlew bootRun
 ```
@@ -12,9 +13,7 @@ gradlew bootRun
 
 ### Sequence
 
-1. When checkout screen opens, the screen calls `/api/payment/create-payment-intent` API with selected item id in post body.
-2. `/api/payment/create-payment-intent` API calculates total amount and call Stripe `Create Payment Intent` API and get payment intent id.
-3. 
+![Sequence](/assets/images/sequence.png)
 
 ### Stripe APIs
 
@@ -30,7 +29,7 @@ I used Stripe Elements approach, which gives flexibility to customer but require
 
 ### Documents
 
-As a whole, quick start explains well on how to implement PCI compliant payment, so it was straight forward to run an end to end flow.
+Quick start explains well on how to implement PCI compliant payment, so it was straight forward to run end to end flow.
 (https://stripe.com/docs/payments/quickstart)
 
 In addition to quick start, I have referred to the following documents.
@@ -42,21 +41,26 @@ In addition to quick start, I have referred to the following documents.
     - https://stripe.com/docs/api/errors
 - Testing
     - https://stripe.com/docs/testing
+- Dashboard
+    - https://stripe.com/docs/receipts
 
-One type of document which I couldn't find was detailed explanation on Java class `com.stripe.model.PaymentIntent`.
+### Challenges
+
+1. I couldn't find detail description for Java class `com.stripe.model.PaymentIntent`.
 So I looked into the class to understand how it works.
 
+## A paragraph or two about how you might extend this if you were building a more robust instance of the same application
 
-## A paragraph or two about how you might extend this if you were building a more robust instance of the same application.
+Since this application doesn't use database, there are critical user experience issues. For example:
+- No stock management, which could cause cancelling order after payment settled
+- No purchase history, which could end up purchasing products multiple times
 
-### For more robustness
+To deal with above issues, e-commerce application manages data like Stock, PurchaseHistory, etc., and records for these table need to be consistent with PaymentIntent.
+Following flow shows example of how these data need to be synchronized.
 
-It depends on what kind of user experience that this e-commerce app wants to provide, so let's take below assumptions:
-- Stock for selected products to be checked before creating PI
-- No matter how user behaves on web site, prevent user to get charged twice
-- 
-
-
-- Use database and persist PaymentIntent with status when create-payment-intent API is called
-- When 
-- Implement webhook to get latest payment status to properly handle a case where customer closes browser before success screen appears.
+![Sequence](/assets/images/datamanagement.png)
+ 
+Assuming data is managed like this, webhook can be used for more robustness.
+In above flow, there can be a case where payment settled but application doesn't know that.
+It can be caused by user to close browser after credit card info sent but before success screen to open.
+Webhook informs payment status to the application so that data can be kept consistent.
